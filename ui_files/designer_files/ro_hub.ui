@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ROs</class>
+ <widget class="QWidget" name="ROs">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1280</width>
+    <height>738</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Repair Orders</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>Images/Icons/list-check.png</normaloff>Images/Icons/list-check.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #504F4F;
+</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="side_menu">
+     <property name="minimumSize">
+      <size>
+       <width>130</width>
+       <height>500</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>90</width>
+       <height>800</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: #929191;</string>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <property name="tabBarAutoHide">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Tab 1</string>
+      </attribute>
+      <widget class="QWidget" name="layoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>20</y>
+         <width>125</width>
+         <height>471</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QPushButton" name="show_all_button">
+          <property name="styleSheet">
+           <string notr="true">text-align: left;</string>
+          </property>
+          <property name="text">
+           <string>Show All</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>Images/Icons/apps.png</normaloff>Images/Icons/apps.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="new_ro_button">
+          <property name="styleSheet">
+           <string notr="true">text-align: left;</string>
+          </property>
+          <property name="text">
+           <string>Create New</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>Images/Icons/add-document.png</normaloff>Images/Icons/add-document.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="estimates_button">
+          <property name="styleSheet">
+           <string notr="true">text-align: left;</string>
+          </property>
+          <property name="text">
+           <string>Estimates</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>Images/Icons/ballot.png</normaloff>Images/Icons/ballot.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="approved_button">
+          <property name="styleSheet">
+           <string notr="true">text-align: left;</string>
+          </property>
+          <property name="text">
+           <string>Approved</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>Images/Icons/list-check.png</normaloff>Images/Icons/list-check.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="in_progress_button">
+          <property name="styleSheet">
+           <string notr="true">text-align: left;</string>
+          </property>
+          <property name="text">
+           <string>Working</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>Images/Icons/document.png</normaloff>Images/Icons/document.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="checckout_button">
+          <property name="styleSheet">
+           <string notr="true">text-align: left;</string>
+          </property>
+          <property name="text">
+           <string>Checkout</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>Images/Icons/shopping-cart.png</normaloff>Images/Icons/shopping-cart.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="settings_button">
+          <property name="styleSheet">
+           <string notr="true">text-align: left;</string>
+          </property>
+          <property name="text">
+           <string>Settings</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>Images/Icons/settings.png</normaloff>Images/Icons/settings.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="home_button">
+          <property name="styleSheet">
+           <string notr="true">text-align: left;</string>
+          </property>
+          <property name="text">
+           <string>Home</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>Images/Icons/home.png</normaloff>Images/Icons/home.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </widget>
+   </item>
+   <item row="0" column="1" rowspan="2">
+    <widget class="QTableWidget" name="ro_lists">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>720</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: #504F4F;
+border: none;</string>
+     </property>
+     <property name="gridStyle">
+      <enum>Qt::DashDotLine</enum>
+     </property>
+     <property name="sortingEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="rowCount">
+      <number>0</number>
+     </property>
+     <property name="columnCount">
+      <number>9</number>
+     </property>
+     <attribute name="horizontalHeaderCascadingSectionResizes">
+      <bool>true</bool>
+     </attribute>
+     <attribute name="horizontalHeaderHighlightSections">
+      <bool>false</bool>
+     </attribute>
+     <column/>
+     <column/>
+     <column/>
+     <column/>
+     <column/>
+     <column/>
+     <column/>
+     <column/>
+     <column/>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>100</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>130</width>
+       <height>200</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>winter_auto.png</pixmap>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
