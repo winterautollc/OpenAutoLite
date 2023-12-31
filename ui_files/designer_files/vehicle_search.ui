@@ -18,7 +18,7 @@
     <normaloff>../Images/Icons/car.png</normaloff>../Images/Icons/car.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">  background-color: #504F4F;</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0" colspan="3">

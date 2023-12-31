@@ -1,7 +1,9 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 import mysql.connector
-import customer_info
 from database.customers import customers_db
+import vehicle_add
+import edit_customer
+
 
 
 
@@ -20,47 +22,46 @@ class Ui_create_ro(object):
             self.customer_table.setRowHidden(row, search_customer not in item.text())
             self.vehicle_table.setRowHidden(row, search_customer not in item.text())
 
-    def update_vehicle(self):
-        self.show_new_customer_page = QtWidgets.QWidget()
-        self.show_new_customer_page_ui = customer_info.Ui_Form()
-        self.show_new_customer_page_ui.setupUi(self.show_new_customer_page)
-        self.show_new_customer_page.show()
-        self.show_new_customer_page_ui.save_create_button.hide()
-        if self.customer_table.cellDoubleClicked:
-            self.show_new_customer_page.setWindowTitle("Edit Customer")
-        selected_row = self.customer_table.currentRow()
-        selected_column = self.customer_table.currentColumn()
-        selected_data = []
-        selected_name = self.customer_table.itemAt(selected_row, selected_column)
-        for column in range(self.customer_table.model().columnCount()):
-            index = self.customer_table.model().index(selected_row, column)
-            selected_data.append(index.data())
-        my_db = mysql.connector.connect(
+    def update_customer_credentials(self):
+            self.show_edit_customer_page = QtWidgets.QWidget()
+            self.show_edit_customer_page_ui = edit_customer.Ui_create_customer_form()
+            self.show_edit_customer_page_ui.setupUi(self.show_edit_customer_page)
+            self.show_edit_customer_page.show()
+            if self.customer_table.cellDoubleClicked:
+                self.show_edit_customer_page.setWindowTitle("Edit Customer")
+            selected_row = self.customer_table.currentRow()
+            selected_column = self.customer_table.currentColumn()
+            selected_data = []
+            selected_name = self.customer_table.itemAt(selected_row, selected_column)
+            for column in range(self.customer_table.model().columnCount()):
+                index = self.customer_table.model().index(selected_row, column)
+                selected_data.append(index.data())
+            my_db = mysql.connector.connect(
 
-            host="localhost",
-            user="root",
-            passwd="OpenAuto1",
-            database="CUSTOMERS"
-        )
-        conn = my_db.cursor()
-        query = """SELECT * FROM customers WHERE(name = %s and phone = %s)"""
-        conn.execute(query, selected_data)
-        result = conn.fetchall()
-        for row in result:
-            self.show_new_customer_page_ui.name_line.setText(row[0])
-            self.show_new_customer_page_ui.address_line.setText(row[1])
-            self.show_new_customer_page_ui.city_line.setText(row[2])
-            self.show_new_customer_page_ui.state_line.setText(row[3])
-            self.show_new_customer_page_ui.zip_line.setText(row[4])
-            self.show_new_customer_page_ui.phone_line.setText(row[5])
-            self.show_new_customer_page_ui.alt_phone_line.setText(row[6])
-            self.show_new_customer_page_ui.email_line.setText(row[7])
-            self.show_new_customer_page_ui.vin_line.setText(row[9])
-            self.show_new_customer_page_ui.year_line.setText(row[10])
-            self.show_new_customer_page_ui.make_line.setText(row[11])
-            self.show_new_customer_page_ui.model_line.setText(row[12])
-            self.show_new_customer_page_ui.engine_line.setText(row[13])
-            self.show_new_customer_page_ui.trim_line.setText(row[14])
+                host="localhost",
+                user="root",
+                passwd="OpenAuto1",
+                database="CUSTOMERS"
+            )
+            conn = my_db.cursor()
+            query = """SELECT * FROM customers WHERE(name = %s and phone = %s)"""
+            name_phone = [selected_data[0], selected_data[1]]
+            conn.execute(query, name_phone)
+            result = conn.fetchall()
+
+            print(selected_data)
+            for row in result:
+                self.show_edit_customer_page_ui.name_line.setText(row[0])
+                self.show_edit_customer_page_ui.address_line.setText(row[1])
+                self.show_edit_customer_page_ui.city_line.setText(row[2])
+                self.show_edit_customer_page_ui.state_line.setText(row[3])
+                self.show_edit_customer_page_ui.zipcode_line.setText(row[4])
+                self.show_edit_customer_page_ui.phone_line.setText(row[5])
+                self.show_edit_customer_page_ui.alt_name.setItemText(0, row[7])
+                self.show_edit_customer_page_ui.alt_line.setText(row[6])
+                self.show_edit_customer_page_ui.email_line.setText(row[8])
+                print(self.show_edit_customer_page_ui.alt_name.currentText())
+            my_db.close()
     def highlight_vehicle(self):
         self.vehicle_table.selectRow(self.vehicle_table.currentRow())
         self.customer_table.selectRow(self.vehicle_table.currentRow())
@@ -68,11 +69,17 @@ class Ui_create_ro(object):
     def highlight_customer(self):
         self.customer_table.selectRow(self.customer_table.currentRow())
         self.vehicle_table.selectRow(self.customer_table.currentRow())
+        self.new_vehicle_button.show()
 
     def scroll_bars(self, index):
         self.customer_table.verticalScrollBar().setValue(index)
         self.vehicle_table.verticalScrollBar().setValue(index)
 
+    def open_vehicle_add(self):
+        self.show_vehicle_add = QtWidgets.QWidget()
+        self.show_vehicle_add_ui = vehicle_add.Ui_Form()
+        self.show_vehicle_add_ui.setupUi(self.show_vehicle_add)
+        self.show_vehicle_add.show()
 
 
 
@@ -144,7 +151,9 @@ class Ui_create_ro(object):
             database="CUSTOMERS"
         )
         conn = my_db.cursor()
-        conn.execute("SELECT * FROM customers ORDER BY name")
+        tables_populate = """SELECT * FROM customers INNER JOIN vehicles ON
+                    customers.customer_id = vehicles.vehicle_id ORDER BY customers.name"""
+        conn.execute(tables_populate)
         table_row = 0
         result = conn.fetchall()
 
@@ -153,13 +162,17 @@ class Ui_create_ro(object):
             self.customer_table.setItem(table_row, 1, QtWidgets.QTableWidgetItem(row[5]))
             table_row += 1
         self.customer_table.cellClicked.connect(self.highlight_customer)
-        self.customer_table.cellDoubleClicked.connect(self.update_vehicle)
+        self.customer_table.cellDoubleClicked.connect(self.update_customer_credentials)
         self.customer_table.verticalScrollBar().valueChanged.connect(self.scroll_bars)
         self.verticalLayout_3.addWidget(self.customer_table)
         self.gridLayout.addLayout(self.verticalLayout_3, 0, 0, 1, 1)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.new_vehicle_button = QtWidgets.QPushButton(parent=create_ro)
+        self.new_vehicle_button.setText("Add New Vehicle")
+        self.new_vehicle_button.hide()
         self.vehicle_button = QtWidgets.QPushButton(parent=create_ro)
+        self.new_vehicle_button.clicked.connect(self.open_vehicle_add)
         self.vehicle_button.setText("")
         icon2 = QtGui.QIcon()
         icon2.addPixmap(QtGui.QPixmap("../ui_files/Images/Icons/car.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
@@ -167,6 +180,7 @@ class Ui_create_ro(object):
         self.vehicle_button.setIconSize(QtCore.QSize(30, 30))
         self.vehicle_button.setFlat(True)
         self.vehicle_button.setObjectName("vehicle_button")
+        self.verticalLayout_2.addWidget(self.new_vehicle_button)
         self.verticalLayout_2.addWidget(self.vehicle_button)
         self.vehicle_label = QtWidgets.QLabel(parent=create_ro)
         font = QtGui.QFont()
@@ -193,15 +207,15 @@ class Ui_create_ro(object):
         self.vehicle_table.setRowCount(customers_db.row_count(self))
         self.vehicle_table.setEditTriggers(QtWidgets.QTableWidget.EditTrigger.NoEditTriggers)
         self.vehicle_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
-        self.vehicle_table.cellDoubleClicked.connect(self.update_vehicle)
+     #   self.vehicle_table.cellDoubleClicked.connect(self.update_vehicle)
         self.vehicle_table.verticalScrollBar().valueChanged.connect(self.scroll_bars)
         header_names = ("Year", "Make", "Model")
         self.vehicle_table.setHorizontalHeaderLabels(header_names)
         vehicle_table_row = 0
         for row in result:
-            self.vehicle_table.setItem(vehicle_table_row, 0, QtWidgets.QTableWidgetItem(row[10]))
-            self.vehicle_table.setItem(vehicle_table_row, 1, QtWidgets.QTableWidgetItem(row[11]))
-            self.vehicle_table.setItem(vehicle_table_row, 2, QtWidgets.QTableWidgetItem(row[12]))
+            self.vehicle_table.setItem(vehicle_table_row, 0, QtWidgets.QTableWidgetItem(row[12]))
+            self.vehicle_table.setItem(vehicle_table_row, 1, QtWidgets.QTableWidgetItem(row[13]))
+            self.vehicle_table.setItem(vehicle_table_row, 2, QtWidgets.QTableWidgetItem(row[14]))
             vehicle_table_row += 1
         self.verticalLayout_2.addWidget(self.vehicle_table)
         self.vehicle_table.cellClicked.connect(self.highlight_vehicle)

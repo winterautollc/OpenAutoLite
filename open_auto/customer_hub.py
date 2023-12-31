@@ -7,6 +7,7 @@ import confirm_delete
 import sys
 import customer_info
 from database.customers import customers_db
+import edit_customer
 class Ui_MainWindow(object):
 
 # Closes customer hub and opens home page
@@ -22,6 +23,7 @@ class Ui_MainWindow(object):
         self.show_customer_search_ui = customer_search.Ui_Form()
         self.show_customer_search_ui.setupUi(self.show_customer_search)
         self.show_customer_search.show()
+
 
 
 # Opens new customer window for adding customer into database
@@ -84,13 +86,12 @@ class Ui_MainWindow(object):
 
     # populate customer line edits with data from selected row and change save button to edit button
     def update_customer_credentials(self):
-        self.show_new_customer_page = QtWidgets.QWidget()
-        self.show_new_customer_page_ui = customer_info.Ui_Form()
-        self.show_new_customer_page_ui.setupUi(self.show_new_customer_page)
-        self.show_new_customer_page.show()
-        self.show_new_customer_page_ui.save_create_button.hide()
+        self.show_edit_customer_page = QtWidgets.QWidget()
+        self.show_edit_customer_page_ui = edit_customer.Ui_create_customer_form()
+        self.show_edit_customer_page_ui.setupUi(self.show_edit_customer_page)
+        self.show_edit_customer_page.show()
         if self.customer_table.cellDoubleClicked:
-            self.show_new_customer_page.setWindowTitle("Edit Customer")
+            self.show_edit_customer_page.setWindowTitle("Edit Customer")
         selected_row = self.customer_table.currentRow()
         selected_column = self.customer_table.currentColumn()
         selected_data = []
@@ -113,20 +114,16 @@ class Ui_MainWindow(object):
 
         print(selected_data)
         for row in result:
-            self.show_new_customer_page_ui.name_line.setText(row[0])
-            self.show_new_customer_page_ui.address_line.setText(row[1])
-            self.show_new_customer_page_ui.city_line.setText(row[2])
-            self.show_new_customer_page_ui.state_line.setText(row[3])
-            self.show_new_customer_page_ui.zip_line.setText(row[4])
-            self.show_new_customer_page_ui.phone_line.setText(row[5])
-            self.show_new_customer_page_ui.alt_phone_line.setText(row[6])
-            self.show_new_customer_page_ui.email_line.setText(row[7])
-            self.show_new_customer_page_ui.vin_line.setText(row[9])
-            self.show_new_customer_page_ui.year_line.setText(row[10])
-            self.show_new_customer_page_ui.make_line.setText(row[11])
-            self.show_new_customer_page_ui.model_line.setText(row[12])
-            self.show_new_customer_page_ui.engine_line.setText(row[13])
-            self.show_new_customer_page_ui.trim_line.setText(row[14])
+            self.show_edit_customer_page_ui.name_line.setText(row[0])
+            self.show_edit_customer_page_ui.address_line.setText(row[1])
+            self.show_edit_customer_page_ui.city_line.setText(row[2])
+            self.show_edit_customer_page_ui.state_line.setText(row[3])
+            self.show_edit_customer_page_ui.zipcode_line.setText(row[4])
+            self.show_edit_customer_page_ui.phone_line.setText(row[5])
+            self.show_edit_customer_page_ui.alt_name.setItemText(0, row[7])
+            self.show_edit_customer_page_ui.alt_line.setText(row[6])
+            self.show_edit_customer_page_ui.email_line.setText(row[8])
+            print(self.show_edit_customer_page_ui.alt_name.currentText())
         my_db.close()
 
 # Find row id to be able to edit or delete data from database
@@ -142,13 +139,11 @@ class Ui_MainWindow(object):
 
 # Refresh Window To Update Table Data
     def restart_app(self):
-
         QtCore.QCoreApplication.quit()
         status = QtCore.QProcess.startDetached(sys.executable, sys.argv)
 # Highlights entire row instead of single cell
     def highlight_row(self):
         self.customer_table.selectRow(self.customer_table.currentRow())
-
 
     def setupUi(self, Customers):
         Customers.setObjectName("Customers")

@@ -1,5 +1,4 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
-import new_customer
 from pyvin import VIN
 import mysql.connector
 
@@ -27,7 +26,7 @@ class Ui_Form(object):
         my_db = mysql.connector.connect(
             host="localhost",
             user="root",
-            passwd="Crapface223",
+            passwd="OpenAuto1",
             database="CUSTOMERS"
          )
         conn = my_db.cursor()

@@ -2,6 +2,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from pyvin import VIN
 import customer_hub
 import mysql.connector
+from database.vehicles import vehicle_db
 
 class Ui_Form(object):
 
@@ -31,18 +32,14 @@ class Ui_Form(object):
 
         customers_attributes = (self.name_line.text(), self.address_line.text(), self.city_line.text(),
                                 self.state_line.text(), self.zip_line.text(), self.phone_line.text(),
-                                self.alt_phone_line.text(),self.email_line.text(), self.vin_line.text(),
-                                self.year_line.text(), self.make_line.text(), self.model_line.text(),
-                                self.engine_line.text(), self.trim_line.text())
-        add_options = """INSERT INTO customers (name, address, city, state, zip, phone, alt_phone, email, vin, year, 
-                            make, model, engine, trim) 
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                                self.alt_name.currentText(),self.alt_phone_line.text(),self.email_line.text())
+        add_options = """INSERT INTO customers (name, address, city, state, zip, phone, alt_name, alt_phone, email) 
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
         conn.execute(add_options, customers_attributes)
         my_db.commit()
         my_db.close()
 
-
-    def edit_customer(self):
+    def save_vehicle(self):
         my_db = mysql.connector.connect(
 
             host="localhost",
@@ -51,23 +48,13 @@ class Ui_Form(object):
             database="CUSTOMERS"
         )
         conn = my_db.cursor()
+        key_id = vehicle_db.find_last_entry_id(self)
 
-        customers_attributes = (self.name_line.text(), self.address_line.text(), self.city_line.text(),
-                                self.state_line.text(), self.zip_line.text(), self.phone_line.text(),
-                                self.alt_phone_line.text(), self.email_line.text(), self.vin_line.text(),
-                                self.year_line.text(), self.make_line.text(), self.model_line.text(),
-                                self.engine_line.text(), self.trim_line.text())
-        print(customers_attributes)
-        add_options = """UPDATE CUSTOMERS.customers SET name= %s, address = %s, city = %s, state = %s, zip = %s, 
-                        phone = %s, alt_phone = %s, email = %s, vin = %s, year = %s, make = %s, model = %s,
-                        engine = %s, trim = %s WHERE(name = %s and phone = %s)"""
-
-        conn.execute(add_options, (customers_attributes[0], customers_attributes[1], customers_attributes[2],
-                     customers_attributes[3], customers_attributes[4], customers_attributes[5], customers_attributes[6],
-                                   customers_attributes[7], customers_attributes[8], customers_attributes[9],
-                                   customers_attributes[10], customers_attributes[11],
-                                   customers_attributes[12], customers_attributes[13],
-                                   customers_attributes[0], customers_attributes[5]))
+        vehicle_attributes = (self.vin_line.text(), self.year_line.text(), self.make_line.text(),
+                              self.model_line.text(), self.engine_line.text(), self.trim_line.text(), key_id)
+        add_vehicle_options = """ INSERT INTO vehicles ( vin, year, make, model, engine, trim, vehicle_id)
+                                       VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+        conn.execute(add_vehicle_options, vehicle_attributes)
         my_db.commit()
         my_db.close()
 
@@ -394,6 +381,7 @@ class Ui_Form(object):
         self.save_create_button.setFlat(True)
         self.save_create_button.setObjectName("save_create_button")
         self.save_create_button.clicked.connect(self.save_customer)
+        self.save_create_button.clicked.connect(self.save_vehicle)
         self.save_create_button.clicked.connect(Form.close)
         self.horizontalLayout.addWidget(self.save_create_button)
         self.edit_button = QtWidgets.QPushButton(parent=Form)
@@ -432,7 +420,7 @@ class Ui_Form(object):
         self.engine_label.setText(_translate("Form", "Engine"))
         self.trim_label.setText(_translate("Form", "Trim"))
         self.abort_button.setText(_translate("Form", "Abort"))
-        self.save_create_button.setText(_translate("Form", "Save & Create RO"))
+        self.save_create_button.setText(_translate("Form", "Save"))
         self.edit_button.setText(_translate("Form", "Save Edit"))
 
 
