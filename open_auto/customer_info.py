@@ -200,6 +200,7 @@ class Ui_Form(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout_13)
         self.horizontalLayout_14 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_14.setObjectName("horizontalLayout_14")
+
         self.alt_phone_label = QtWidgets.QLabel(parent=Form)
         self.alt_phone_label.setMinimumSize(QtCore.QSize(80, 0))
         font = QtGui.QFont()
@@ -208,6 +209,13 @@ class Ui_Form(object):
         self.alt_phone_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.alt_phone_label.setObjectName("alt_phone_label")
         self.horizontalLayout_14.addWidget(self.alt_phone_label)
+        self.alt_name = QtWidgets.QComboBox(parent=Form)
+        self.alt_name.setMinimumSize(150, 0)
+        self.alt_name.setObjectName("alt_name")
+        self.alt_name.setEditable(True)
+        name_items = ["Work", "Cell", "Home", "Relative"]
+        self.alt_name.addItems(name_items)
+        self.horizontalLayout_14.addWidget(self.alt_name)
         self.alt_phone_line = QtWidgets.QLineEdit(parent=Form)
         self.alt_phone_line.setMinimumSize(QtCore.QSize(0, 30))
         self.alt_phone_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)

@@ -318,6 +318,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QComboBox" name="alt_name">
+         <property name="minimumSize">
+          <size>
+           <width>150</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLineEdit" name="alt_phone_line">
          <property name="minimumSize">
           <size>
