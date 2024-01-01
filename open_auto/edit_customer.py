@@ -25,13 +25,10 @@ class Ui_create_customer_form(object):
         add_options = """UPDATE CUSTOMERS.customers SET name= %s, address = %s, city = %s, state = %s, zip = %s, 
                          phone = %s, alt_phone = %s, alt_name = %s, email = %s WHERE(name = %s and phone = %s)"""
 
-        try:
-            conn.execute(add_options, (customers_attributes[0], customers_attributes[1],
+        conn.execute(add_options, (customers_attributes[0], customers_attributes[1],
                                        customers_attributes[2], customers_attributes[3], customers_attributes[4],
                                        customers_attributes[5], customers_attributes[6], customers_attributes[7],
-                                       customers_attributes[8], customers_attributes[0], customers_attributes[5]))
-        except:
-            self.show_cant_edit.show()
+                                        customers_attributes[8], customers_attributes[0], customers_attributes[5]))
 
         my_db.commit()
         my_db.close()
@@ -151,6 +148,7 @@ class Ui_create_customer_form(object):
         self.alt_line = QtWidgets.QLineEdit(parent=create_customer_form)
         self.alt_line.setMinimumSize(QtCore.QSize(0, 40))
         self.alt_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.alt_line.setFont(font)
         self.alt_line.setObjectName("alt_line")
         self.gridLayout.addWidget(self.alt_line, 6, 3, 1, 1)
         self.formLayout.setLayout(0, QtWidgets.QFormLayout.ItemRole.SpanningRole, self.gridLayout)
@@ -164,6 +162,7 @@ class Ui_create_customer_form(object):
         self.abort_button.setIconSize(QtCore.QSize(30, 30))
         self.abort_button.setFlat(True)
         self.abort_button.setObjectName("abort_button")
+        self.abort_button.clicked.connect(create_customer_form.close)
         self.horizontalLayout.addWidget(self.abort_button)
         self.save_button = QtWidgets.QPushButton(parent=create_customer_form)
         self.save_button.setStyleSheet("text-align: left;")
@@ -173,6 +172,8 @@ class Ui_create_customer_form(object):
         self.save_button.setIconSize(QtCore.QSize(30, 30))
         self.save_button.setAutoRepeatDelay(100)
         self.save_button.setFlat(True)
+        self.save_button.clicked.connect(self.edit_customer)
+        self.save_button.clicked.connect(create_customer_form.close)
         self.save_button.setObjectName("save_button")
         self.horizontalLayout.addWidget(self.save_button)
         self.label_8 = QtWidgets.QLabel(parent=create_customer_form)

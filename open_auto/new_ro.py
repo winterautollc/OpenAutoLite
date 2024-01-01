@@ -1,6 +1,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 import mysql.connector
-from database.customers import customers_db
+from database.customers.customers_db import row_count
+
 import vehicle_add
 import edit_customer
 
@@ -62,6 +63,42 @@ class Ui_create_ro(object):
                 self.show_edit_customer_page_ui.email_line.setText(row[8])
                 print(self.show_edit_customer_page_ui.alt_name.currentText())
             my_db.close()
+    def update_vehicle(self):
+        self.change_vehicle = QtWidgets.QWidget()
+        self.change_vehicle_ui = vehicle_add.Ui_Form()
+        self.change_vehicle_ui.setupUi(self.change_vehicle)
+        self.change_vehicle.show()
+        self.change_vehicle.setWindowTitle("Edit Vehicle")
+        selected_row = self.vehicle_table.currentRow()
+        selected_column = self.vehicle_table.currentColumn()
+        selected_data = []
+        selected_vehicle = self.vehicle_table.itemAt(selected_row, selected_column)
+        for column in range(self.vehicle_table.model().columnCount()):
+            index = self.vehicle_table.model().index(selected_row, column)
+            selected_data.append(index.data())
+        year = int(selected_data[0])
+        my_db = mysql.connector.connect(
+
+            host="localhost",
+            user="root",
+            passwd="OpenAuto1",
+            database="CUSTOMERS"
+        )
+        conn = my_db.cursor()
+        find_vehicle = """SELECT * FROM vehicles WHERE year = %s and make = %s and model = %s"""
+        vh_data = [selected_data[0], selected_data[1], selected_data[2]]
+        conn.execute(find_vehicle, vh_data)
+        result = conn.fetchall()
+        for row in result:
+            self.change_vehicle_ui.vin_line.setText(row[1])
+            self.change_vehicle_ui.year_line.setText(row[2])
+            self.change_vehicle_ui.make_line.setText(row[3])
+            self.change_vehicle_ui.model_line.setText(row[4])
+            self.change_vehicle_ui.engine_line.setText(row[5])
+            self.change_vehicle_ui.trim_line.setText(row[6])
+        my_db.close()
+
+
     def highlight_vehicle(self):
         self.vehicle_table.selectRow(self.vehicle_table.currentRow())
         self.customer_table.selectRow(self.vehicle_table.currentRow())
@@ -139,7 +176,7 @@ class Ui_create_ro(object):
         self.customer_table.setMinimumSize(QtCore.QSize(500, 265))
         self.customer_table.setObjectName("customer_table")
         self.customer_table.setColumnCount(2)
-        self.customer_table.setRowCount(customers_db.row_count(self))
+        self.customer_table.setRowCount(row_count(self))
         self.customer_table.setEditTriggers(QtWidgets.QTableWidget.EditTrigger.NoEditTriggers)
         self.customer_table.setHorizontalHeaderLabels(header_names)
         self.customer_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
@@ -204,10 +241,10 @@ class Ui_create_ro(object):
         self.vehicle_table.setMinimumSize(QtCore.QSize(500, 265))
         self.vehicle_table.setObjectName("vehicle_table")
         self.vehicle_table.setColumnCount(3)
-        self.vehicle_table.setRowCount(customers_db.row_count(self))
+        self.vehicle_table.setRowCount(row_count(self))
         self.vehicle_table.setEditTriggers(QtWidgets.QTableWidget.EditTrigger.NoEditTriggers)
         self.vehicle_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
-     #   self.vehicle_table.cellDoubleClicked.connect(self.update_vehicle)
+        self.vehicle_table.cellDoubleClicked.connect(self.update_vehicle)
         self.vehicle_table.verticalScrollBar().valueChanged.connect(self.scroll_bars)
         header_names = ("Year", "Make", "Model")
         self.vehicle_table.setHorizontalHeaderLabels(header_names)

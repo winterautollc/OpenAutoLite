@@ -1,9 +1,8 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
-import sqlite3
 import mysql.connector
 import confirm_delete
-import customer_info
 from database.customers import customers_db
+import edit_customer
 
 
 class Ui_Form(object):
@@ -53,13 +52,11 @@ class Ui_Form(object):
     def highlight_row(self):
         self.ro_search_list.selectRow(self.ro_search_list.currentRow())
     def update_customer_credentials(self):
-        self.show_new_customer_page = QtWidgets.QWidget()
-        self.show_new_customer_page_ui = customer_info.Ui_Form()
-        self.show_new_customer_page_ui.setupUi(self.show_new_customer_page)
-        self.show_new_customer_page.show()
-        if self.ro_search_list.cellDoubleClicked:
-            self.show_new_customer_page.setWindowTitle("Edit Customer")
-            self.show_new_customer_page_ui.save_create_button.hide()
+        self.show_edit_customer_page = QtWidgets.QWidget()
+        self.show_edit_customer_page_ui = edit_customer.Ui_create_customer_form()
+        self.show_edit_customer_page_ui.setupUi(self.show_edit_customer_page)
+        self.show_edit_customer_page.show()
+        self.show_edit_customer_page.setWindowTitle("Edit Customer")
         selected_row = self.ro_search_list.currentRow()
         selected_column = self.ro_search_list.currentColumn()
         selected_data = []
@@ -75,24 +72,24 @@ class Ui_Form(object):
         )
         conn = my_db.cursor()
         query = """SELECT * FROM customers WHERE(name = %s and phone = %s)"""
-        name_data = [selected_data[0], selected_data[5]]
-        conn.execute(query, name_data)
+        name_phone = [selected_data[0], selected_data[5]]
+        conn.execute(query, name_phone)
         result = conn.fetchall()
+
+        print(selected_data)
         for row in result:
-            self.show_new_customer_page_ui.name_line.setText(row[0])
-            self.show_new_customer_page_ui.address_line.setText(row[1])
-            self.show_new_customer_page_ui.city_line.setText(row[2])
-            self.show_new_customer_page_ui.state_line.setText(row[3])
-            self.show_new_customer_page_ui.zip_line.setText(row[4])
-            self.show_new_customer_page_ui.phone_line.setText(row[5])
-            self.show_new_customer_page_ui.alt_phone_line.setText(row[6])
-            self.show_new_customer_page_ui.email_line.setText(row[7])
-            self.show_new_customer_page_ui.vin_line.setText(row[9])
-            self.show_new_customer_page_ui.year_line.setText(row[10])
-            self.show_new_customer_page_ui.make_line.setText(row[11])
-            self.show_new_customer_page_ui.model_line.setText(row[12])
-            self.show_new_customer_page_ui.engine_line.setText(row[13])
-            self.show_new_customer_page_ui.trim_line.setText(row[14])
+            self.show_edit_customer_page_ui.name_line.setText(row[0])
+            self.show_edit_customer_page_ui.address_line.setText(row[1])
+            self.show_edit_customer_page_ui.city_line.setText(row[2])
+            self.show_edit_customer_page_ui.state_line.setText(row[3])
+            self.show_edit_customer_page_ui.zipcode_line.setText(row[4])
+            self.show_edit_customer_page_ui.phone_line.setText(row[5])
+            self.show_edit_customer_page_ui.alt_name.setItemText(0, row[7])
+            self.show_edit_customer_page_ui.alt_line.setText(row[6])
+            self.show_edit_customer_page_ui.email_line.setText(row[8])
+            print(self.show_edit_customer_page_ui.alt_name.currentText())
+        my_db.close()
+
 
 
 
@@ -165,7 +162,7 @@ class Ui_Form(object):
             self.ro_search_list.setItem(table_row, 4, QtWidgets.QTableWidgetItem(row[4]))
             self.ro_search_list.setItem(table_row, 5, QtWidgets.QTableWidgetItem(row[5]))
             self.ro_search_list.setItem(table_row, 6, QtWidgets.QTableWidgetItem(row[6]))
-            self.ro_search_list.setItem(table_row, 7, QtWidgets.QTableWidgetItem(row[7]))
+            self.ro_search_list.setItem(table_row, 7, QtWidgets.QTableWidgetItem(row[8]))
 
             table_row += 1
         self.ro_search_list.cellDoubleClicked.connect(self.update_customer_credentials)

@@ -1,5 +1,6 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from pyvin import VIN
+import mysql.connector
 
 class Ui_Form(object):
 
@@ -15,15 +16,31 @@ class Ui_Form(object):
             self.vin_line.setText("Please choose a proper vin number")
 
     def update_vehicle(self):
-        pass
+        my_db = mysql.connector.connect(
 
+            host="localhost",
+            user="root",
+            passwd="OpenAuto1",
+            database="CUSTOMERS"
+        )
+        conn = my_db.cursor()
+        vehicle_attributes = (self.vin_line.text(), self.year_line.text(), self.make_line.text(),
+                              self.model_line.text(), self.engine_line.text(), self.trim_line.text())
+
+        change_vehicle = """UPDATE vehicles SET vin = %s, year = %s, make = %s, model = %s, engine = %s, trim = %s
+                            WHERE year = %s and make = %s and model = %s"""
+        conn.execute(change_vehicle, (vehicle_attributes[0], vehicle_attributes[1], vehicle_attributes[2],
+                                              vehicle_attributes[3], vehicle_attributes[4], vehicle_attributes[5],
+                                              vehicle_attributes[1], vehicle_attributes[2], vehicle_attributes[3]))
+        my_db.commit()
+        my_db.close()
 
 
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(1280, 720)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("/home/fred/PycharmProjects/OpenAuto/ui_files/designer_files/../Images/Icons/car.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("../ui_files/Images/Icons/car.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         Form.setWindowIcon(icon)
         Form.setStyleSheet("")
         self.gridLayout = QtWidgets.QGridLayout(Form)
@@ -139,7 +156,7 @@ class Ui_Form(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.vin_search_button = QtWidgets.QPushButton(parent=Form)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("/home/fred/PycharmProjects/OpenAuto/ui_files/designer_files/../Images/Icons/search.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon1.addPixmap(QtGui.QPixmap("../ui_files/Images/Icons/search.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.vin_search_button.setIcon(icon1)
         self.vin_search_button.setIconSize(QtCore.QSize(30, 30))
         self.vin_search_button.setFlat(True)
@@ -159,7 +176,7 @@ class Ui_Form(object):
         self.winter_auto_logo = QtWidgets.QLabel(parent=Form)
         self.winter_auto_logo.setMaximumSize(QtCore.QSize(16777215, 200))
         self.winter_auto_logo.setText("")
-        self.winter_auto_logo.setPixmap(QtGui.QPixmap("/home/fred/PycharmProjects/OpenAuto/ui_files/designer_files/../Images/winter_auto.png"))
+        self.winter_auto_logo.setPixmap(QtGui.QPixmap("../ui_files/Images/winter_auto.png"))
         self.winter_auto_logo.setAlignment(QtCore.Qt.AlignmentFlag.AlignBottom|QtCore.Qt.AlignmentFlag.AlignHCenter)
         self.winter_auto_logo.setObjectName("winter_auto_logo")
         self.gridLayout.addWidget(self.winter_auto_logo, 4, 0, 1, 1)
@@ -170,7 +187,7 @@ class Ui_Form(object):
         self.abort_button = QtWidgets.QPushButton(parent=Form)
         self.abort_button.setStyleSheet("text-align: center;")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("/home/fred/PycharmProjects/OpenAuto/ui_files/designer_files/../Images/Icons/cross.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon2.addPixmap(QtGui.QPixmap("../ui_files/Images/Icons/cross.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.abort_button.setIcon(icon2)
         self.abort_button.setIconSize(QtCore.QSize(30, 30))
         self.abort_button.setAutoRepeatDelay(100)
@@ -181,7 +198,7 @@ class Ui_Form(object):
         self.save_create_button = QtWidgets.QPushButton(parent=Form)
         self.save_create_button.setStyleSheet("text-align: center;")
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap("/home/fred/PycharmProjects/OpenAuto/ui_files/designer_files/../Images/Icons/check.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon3.addPixmap(QtGui.QPixmap("../ui_files/Images/Icons/check.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.save_create_button.setIcon(icon3)
         self.save_create_button.setIconSize(QtCore.QSize(30, 30))
         self.save_create_button.setFlat(True)

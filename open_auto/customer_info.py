@@ -392,7 +392,7 @@ class Ui_Form(object):
         self.edit_button.setIcon(icon4)
         self.edit_button.setIconSize(QtCore.QSize(30, 30))
         self.edit_button.setFlat(True)
-        self.edit_button.clicked.connect(self.edit_customer)
+        self.edit_button.clicked.connect(self.save_customer)
         self.edit_button.clicked.connect(Form.close)
         self.horizontalLayout.addWidget(self.edit_button)
         self.gridLayout.addLayout(self.horizontalLayout, 3, 1, 1, 1)
