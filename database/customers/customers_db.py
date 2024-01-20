@@ -1,6 +1,5 @@
 import mysql.connector
 
-
 def row_count(self):
     my_db = mysql.connector.connect(
 

@@ -3,6 +3,7 @@ from pyvin import VIN
 import customer_hub
 import mysql.connector
 from database.vehicles import vehicle_db
+import json
 
 class Ui_Form(object):
 
@@ -33,6 +34,8 @@ class Ui_Form(object):
         customers_attributes = (self.name_line.text(), self.address_line.text(), self.city_line.text(),
                                 self.state_line.text(), self.zip_line.text(), self.phone_line.text(),
                                 self.alt_name.currentText(),self.alt_phone_line.text(),self.email_line.text())
+        with open('../database/customers/cid.json', 'w') as outfile:
+            json.dump(customers_attributes, outfile)
         add_options = """INSERT INTO customers (name, address, city, state, zip, phone, alt_name, alt_phone, email) 
                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
         conn.execute(add_options, customers_attributes)
@@ -48,11 +51,19 @@ class Ui_Form(object):
             database="CUSTOMERS"
         )
         conn = my_db.cursor()
-        key_id = vehicle_db.find_last_entry_id(self)
+        with open('../database/customers/cid.json', 'r') as outfile:
+            customer_id = json.load(outfile)
+        cid = (customer_id[0], customer_id[1], customer_id[2], customer_id[3], customer_id[4], customer_id[5])
+
+        find_id = """SELECT customer_id from customers where name = %s and address = %s and city = %s and state = %s 
+                     and zip = %s and phone = %s"""
+        conn.execute(find_id, cid)
+        result = conn.fetchone()
+
 
         vehicle_attributes = (self.vin_line.text(), self.year_line.text(), self.make_line.text(),
-                              self.model_line.text(), self.engine_line.text(), self.trim_line.text(), key_id)
-        add_vehicle_options = """ INSERT INTO vehicles ( vin, year, make, model, engine, trim, vehicle_id)
+                              self.model_line.text(), self.engine_line.text(), self.trim_line.text(), result[0])
+        add_vehicle_options = """ INSERT INTO vehicles ( vin, year, make, model, engine, trim, customer_id)
                                        VALUES (%s, %s, %s, %s, %s, %s, %s)"""
         conn.execute(add_vehicle_options, vehicle_attributes)
         my_db.commit()
@@ -100,6 +111,9 @@ class Ui_Form(object):
         self.name_line.setMinimumSize(QtCore.QSize(50, 30))
         self.name_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.name_line.setObjectName("name_line")
+        name_font = self.name_line.font()
+        name_font.setPointSize(16)
+        self.name_line.setFont(name_font)
         self.horizontalLayout_8.addWidget(self.name_line)
         self.verticalLayout_2.addLayout(self.horizontalLayout_8)
         self.horizontalLayout_9 = QtWidgets.QHBoxLayout()
@@ -116,6 +130,9 @@ class Ui_Form(object):
         self.address_line.setMinimumSize(QtCore.QSize(50, 30))
         self.address_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.address_line.setObjectName("address_line")
+        address_font = self.address_line.font()
+        address_font.setPointSize(16)
+        self.address_line.setFont(address_font)
         self.horizontalLayout_9.addWidget(self.address_line)
         self.verticalLayout_2.addLayout(self.horizontalLayout_9)
         self.horizontalLayout_10 = QtWidgets.QHBoxLayout()
@@ -132,6 +149,9 @@ class Ui_Form(object):
         self.city_line.setMinimumSize(QtCore.QSize(0, 30))
         self.city_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.city_line.setObjectName("city_line")
+        city_font = self.city_line.font()
+        city_font.setPointSize(16)
+        self.city_line.setFont(city_font)
         self.horizontalLayout_10.addWidget(self.city_line)
         self.verticalLayout_2.addLayout(self.horizontalLayout_10)
         self.horizontalLayout_11 = QtWidgets.QHBoxLayout()
@@ -148,6 +168,9 @@ class Ui_Form(object):
         self.state_line.setMinimumSize(QtCore.QSize(0, 30))
         self.state_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.state_line.setObjectName("state_line")
+        state_font = self.state_line.font()
+        state_font.setPointSize(16)
+        self.state_line.setFont(state_font)
         self.horizontalLayout_11.addWidget(self.state_line)
         self.verticalLayout_2.addLayout(self.horizontalLayout_11)
         self.horizontalLayout_12 = QtWidgets.QHBoxLayout()
@@ -166,6 +189,9 @@ class Ui_Form(object):
         self.zip_line.setObjectName("zip_line")
         self.zip_line.setMaxLength(5)
         self.zip_line.setPlaceholderText("12345")
+        zip_font = self.zip_line.font()
+        zip_font.setPointSize(16)
+        self.zip_line.setFont(zip_font)
         self.horizontalLayout_12.addWidget(self.zip_line)
         self.verticalLayout_2.addLayout(self.horizontalLayout_12)
         self.horizontalLayout_13 = QtWidgets.QHBoxLayout()
@@ -182,7 +208,11 @@ class Ui_Form(object):
         self.phone_line.setMinimumSize(QtCore.QSize(0, 30))
         self.phone_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.phone_line.setObjectName("phone_line")
-        self.phone_line.setPlaceholderText("(   ) -   -    ")
+        phone_font = self.phone_line.font()
+        phone_font.setPointSize(16)
+        self.phone_line.setFont(phone_font)
+       # self.phone_line.setPlaceholderText("(   ) -   -    ", )
+        self.phone_line.setInputMask("(000)-000-0000")
         self.horizontalLayout_13.addWidget(self.phone_line)
         self.verticalLayout_2.addLayout(self.horizontalLayout_13)
         self.horizontalLayout_14 = QtWidgets.QHBoxLayout()
@@ -207,6 +237,11 @@ class Ui_Form(object):
         self.alt_phone_line.setMinimumSize(QtCore.QSize(0, 30))
         self.alt_phone_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.alt_phone_line.setObjectName("alt_phone_line")
+        self.alt_phone_line.setInputMask("(000)-000-0000")
+        alt_phone_font = self.alt_phone_line.font()
+        alt_phone_font.setPointSize(16)
+        self.alt_name.setFont(alt_phone_font)
+        self.alt_phone_line.setFont(alt_phone_font)
         self.horizontalLayout_14.addWidget(self.alt_phone_line)
         self.verticalLayout_2.addLayout(self.horizontalLayout_14)
         self.horizontalLayout_15 = QtWidgets.QHBoxLayout()
@@ -223,6 +258,9 @@ class Ui_Form(object):
         self.email_line.setMinimumSize(QtCore.QSize(0, 30))
         self.email_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.email_line.setObjectName("email_line")
+        email_font = self.email_line.font()
+        email_font.setPointSize(16)
+        self.email_line.setFont(email_font)
         self.horizontalLayout_15.addWidget(self.email_line)
         self.verticalLayout_2.addLayout(self.horizontalLayout_15)
         self.gridLayout.addLayout(self.verticalLayout_2, 1, 0, 2, 1)
@@ -241,10 +279,11 @@ class Ui_Form(object):
         self.vin_line.setMinimumSize(QtCore.QSize(0, 35))
         self.vin_line.setMaximumSize(QtCore.QSize(600, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(14)
+        font.setPointSize(16)
         self.vin_line.setFont(font)
         self.vin_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.vin_line.setObjectName("vin_line")
+
         self.horizontalLayout_2.addWidget(self.vin_line)
         self.gridLayout.addLayout(self.horizontalLayout_2, 1, 1, 1, 1)
         self.verticalLayout = QtWidgets.QVBoxLayout()
@@ -264,7 +303,7 @@ class Ui_Form(object):
         self.year_line.setMinimumSize(QtCore.QSize(50, 30))
         self.year_line.setMaximumSize(QtCore.QSize(600, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(16)
         self.year_line.setFont(font)
         self.year_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.year_line.setObjectName("year_line")
@@ -284,7 +323,7 @@ class Ui_Form(object):
         self.make_line.setMinimumSize(QtCore.QSize(0, 30))
         self.make_line.setMaximumSize(QtCore.QSize(600, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(16)
         self.make_line.setFont(font)
         self.make_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.make_line.setObjectName("make_line")
@@ -304,7 +343,7 @@ class Ui_Form(object):
         self.model_line.setMinimumSize(QtCore.QSize(0, 30))
         self.model_line.setMaximumSize(QtCore.QSize(600, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(16)
         self.model_line.setFont(font)
         self.model_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.model_line.setObjectName("model_line")
@@ -324,7 +363,7 @@ class Ui_Form(object):
         self.engine_line.setMinimumSize(QtCore.QSize(0, 30))
         self.engine_line.setMaximumSize(QtCore.QSize(600, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(16)
         self.engine_line.setFont(font)
         self.engine_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.engine_line.setObjectName("engine_line")
@@ -344,7 +383,7 @@ class Ui_Form(object):
         self.trim_line.setMinimumSize(QtCore.QSize(0, 30))
         self.trim_line.setMaximumSize(QtCore.QSize(600, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(16)
         self.trim_line.setFont(font)
         self.trim_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.trim_line.setObjectName("trim_line")
@@ -371,6 +410,7 @@ class Ui_Form(object):
         self.abort_button.setAutoRepeatDelay(100)
         self.abort_button.setFlat(True)
         self.abort_button.setObjectName("abort_button")
+        self.abort_button.clicked.connect(Form.close)
         self.horizontalLayout.addWidget(self.abort_button)
         self.save_create_button = QtWidgets.QPushButton(parent=Form)
         self.save_create_button.setStyleSheet("text-align: center;")

@@ -1,8 +1,64 @@
+import io
+import json
 from PyQt6 import QtCore, QtGui, QtWidgets
 from pyvin import VIN
 import mysql.connector
+import new_ro
 
 class Ui_Form(object):
+
+
+    def save_vehicle(self):
+        my_db = mysql.connector.connect(
+
+            host="localhost",
+            user="root",
+            passwd="OpenAuto1",
+            database="CUSTOMERS"
+        )
+        conn = my_db.cursor()
+
+        with open('../database/customers/cid.json', 'r') as outfile:
+            customer_id = json.load(outfile)
+
+        find_cid = """SELECT customer_id from customers where name = %s and phone = %s"""
+        conn.execute(find_cid, customer_id)
+        result = conn.fetchone()
+        print(result)
+        vehicle_attributes = (self.vin_line.text(), self.year_line.text(), self.make_line.text(),
+                              self.model_line.text(), self.engine_line.text(), self.trim_line.text(), result[0])
+        new_vehicle = """INSERT INTO vehicles ( vin, year, make, model, engine, trim, customer_id)
+                                       VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+        conn.execute(new_vehicle, vehicle_attributes)
+        my_db.commit()
+        my_db.close()
+    def update_vehicle(self):
+
+
+        my_db = mysql.connector.connect(
+
+            host="localhost",
+            user="root",
+            passwd="OpenAuto1",
+            database="CUSTOMERS"
+        )
+        conn = my_db.cursor()
+        with open('../database/vehicles/vid.json', 'r') as outfile:
+            vehicle_id = json.load(outfile)
+        find_id = """SELECT vehicle_id, customer_id from vehicles where vin = %s and year = %s and make = %s 
+                and model = %s"""
+        conn.execute(find_id, vehicle_id)
+        result = conn.fetchone()
+        print(result)
+        change_vehicle = """UPDATE vehicles SET vin = %s, year = %s, make = %s, model = %s, engine = %s, trim = %s
+                            WHERE(vehicle_id = %s and customer_id = %s)"""
+        vehicle_attributes = [self.vin_line.text(), self.year_line.text(), self.make_line.text(),
+                              self.model_line.text(), self.engine_line.text(), self.trim_line.text()]
+        conn.execute(change_vehicle, (vehicle_attributes[0], vehicle_attributes[1], vehicle_attributes[2],
+                                      vehicle_attributes[3],
+                                      vehicle_attributes[4], vehicle_attributes[5], result[0], result[1]))
+        my_db.commit()
+        my_db.close()
 
     def vin_search(self):
         try:
@@ -14,26 +70,6 @@ class Ui_Form(object):
             self.trim_line.setText(self.vin.Trim)
         except:
             self.vin_line.setText("Please choose a proper vin number")
-
-    def update_vehicle(self):
-        my_db = mysql.connector.connect(
-
-            host="localhost",
-            user="root",
-            passwd="OpenAuto1",
-            database="CUSTOMERS"
-        )
-        conn = my_db.cursor()
-        vehicle_attributes = (self.vin_line.text(), self.year_line.text(), self.make_line.text(),
-                              self.model_line.text(), self.engine_line.text(), self.trim_line.text())
-
-        change_vehicle = """UPDATE vehicles SET vin = %s, year = %s, make = %s, model = %s, engine = %s, trim = %s
-                            WHERE year = %s and make = %s and model = %s"""
-        conn.execute(change_vehicle, (vehicle_attributes[0], vehicle_attributes[1], vehicle_attributes[2],
-                                              vehicle_attributes[3], vehicle_attributes[4], vehicle_attributes[5],
-                                              vehicle_attributes[1], vehicle_attributes[2], vehicle_attributes[3]))
-        my_db.commit()
-        my_db.close()
 
 
     def setupUi(self, Form):
@@ -69,7 +105,7 @@ class Ui_Form(object):
         self.year_line.setMinimumSize(QtCore.QSize(50, 30))
         self.year_line.setMaximumSize(QtCore.QSize(600, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(16)
         self.year_line.setFont(font)
         self.year_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.year_line.setObjectName("year_line")
@@ -88,7 +124,7 @@ class Ui_Form(object):
         self.make_line.setMinimumSize(QtCore.QSize(0, 30))
         self.make_line.setMaximumSize(QtCore.QSize(600, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(16)
         self.make_line.setFont(font)
         self.make_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.make_line.setObjectName("make_line")
@@ -107,7 +143,7 @@ class Ui_Form(object):
         self.model_line.setMinimumSize(QtCore.QSize(0, 30))
         self.model_line.setMaximumSize(QtCore.QSize(600, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(16)
         self.model_line.setFont(font)
         self.model_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.model_line.setObjectName("model_line")
@@ -126,7 +162,7 @@ class Ui_Form(object):
         self.engine_line.setMinimumSize(QtCore.QSize(0, 30))
         self.engine_line.setMaximumSize(QtCore.QSize(600, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(16)
         self.engine_line.setFont(font)
         self.engine_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.engine_line.setObjectName("engine_line")
@@ -145,7 +181,7 @@ class Ui_Form(object):
         self.trim_line.setMinimumSize(QtCore.QSize(0, 30))
         self.trim_line.setMaximumSize(QtCore.QSize(600, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(13)
+        font.setPointSize(16)
         self.trim_line.setFont(font)
         self.trim_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.trim_line.setObjectName("trim_line")
@@ -167,7 +203,7 @@ class Ui_Form(object):
         self.vin_line.setMinimumSize(QtCore.QSize(0, 35))
         self.vin_line.setMaximumSize(QtCore.QSize(600, 16777215))
         font = QtGui.QFont()
-        font.setPointSize(14)
+        font.setPointSize(16)
         self.vin_line.setFont(font)
         self.vin_line.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.vin_line.setObjectName("vin_line")
@@ -202,13 +238,22 @@ class Ui_Form(object):
         self.save_create_button.setIcon(icon3)
         self.save_create_button.setIconSize(QtCore.QSize(30, 30))
         self.save_create_button.setFlat(True)
-        self.save_create_button.clicked.connect(self.update_vehicle)
+        self.save_create_button.clicked.connect(self.save_vehicle)
+        self.save_create_button.clicked.connect(Form.close)
+        self.edit_button = QtWidgets.QPushButton(parent=Form)
+        self.edit_button.setStyleSheet("text-align: center;")
+        self.edit_button.setIcon(icon3)
+        self.edit_button.setFlat(True)
+        self.edit_button.setObjectName("edit_button")
+        self.edit_button.setIconSize(QtCore.QSize(30, 30))
+        self.edit_button.clicked.connect(self.update_vehicle)
+        self.edit_button.clicked.connect(Form.close)
+        self.horizontalLayout.addWidget(self.edit_button)
         self.save_create_button.setObjectName("save_create_button")
         self.horizontalLayout.addWidget(self.save_create_button)
         self.gridLayout.addLayout(self.horizontalLayout, 4, 2, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(20, 800, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.gridLayout.addItem(spacerItem, 2, 2, 1, 1)
-
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -224,6 +269,7 @@ class Ui_Form(object):
         self.vin_search_button.setText(_translate("Form", "VIN Search"))
         self.abort_button.setText(_translate("Form", "Abort"))
         self.save_create_button.setText(_translate("Form", "Save Vehicle"))
+        self.edit_button.setText(_translate("Form", "Save Edit"))
 
 
 if __name__ == "__main__":
@@ -234,3 +280,4 @@ if __name__ == "__main__":
     ui.setupUi(Form)
     Form.show()
     sys.exit(app.exec())
+

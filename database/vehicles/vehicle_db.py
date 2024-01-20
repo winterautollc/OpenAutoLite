@@ -1,4 +1,5 @@
 import mysql.connector
+import json
 
 my_db = mysql.connector.connect(
 
@@ -11,8 +12,8 @@ my_db = mysql.connector.connect(
 
 def find_last_entry_id(self):
     conn = my_db.cursor()
-    key_id = "SELECT LAST_INSERT_ID(customer_id) FROM customers"
-    conn.execute(key_id)
-    for row in conn:
-        last_id = row[0]
-        return last_id
+    with open('../customers/cid.json', 'r') as outfile:
+        customer_id = json.load(outfile)
+    return customer_id
+
+

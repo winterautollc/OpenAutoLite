@@ -1,12 +1,11 @@
+import io
+import json
 from PyQt6 import QtCore, QtGui, QtWidgets
 import mysql.connector
 from database.customers.customers_db import row_count
 
 import vehicle_add
 import edit_customer
-
-
-
 
 class Ui_create_ro(object):
     def search_vehicle(self):
@@ -50,7 +49,6 @@ class Ui_create_ro(object):
             conn.execute(query, name_phone)
             result = conn.fetchall()
 
-            print(selected_data)
             for row in result:
                 self.show_edit_customer_page_ui.name_line.setText(row[0])
                 self.show_edit_customer_page_ui.address_line.setText(row[1])
@@ -61,22 +59,22 @@ class Ui_create_ro(object):
                 self.show_edit_customer_page_ui.alt_name.setItemText(0, row[7])
                 self.show_edit_customer_page_ui.alt_line.setText(row[6])
                 self.show_edit_customer_page_ui.email_line.setText(row[8])
-                print(self.show_edit_customer_page_ui.alt_name.currentText())
             my_db.close()
+
     def update_vehicle(self):
         self.change_vehicle = QtWidgets.QWidget()
         self.change_vehicle_ui = vehicle_add.Ui_Form()
         self.change_vehicle_ui.setupUi(self.change_vehicle)
-        self.change_vehicle.show()
+        self.change_vehicle_ui.save_create_button.hide()
         self.change_vehicle.setWindowTitle("Edit Vehicle")
-        selected_row = self.vehicle_table.currentRow()
-        selected_column = self.vehicle_table.currentColumn()
+        selected_vehicle_row = self.vehicle_table.currentRow()
+        selected_vehicle_column = self.vehicle_table.currentColumn()
         selected_data = []
-        selected_vehicle = self.vehicle_table.itemAt(selected_row, selected_column)
+        selected_vehicle = self.vehicle_table.itemAt(selected_vehicle_row, selected_vehicle_column)
         for column in range(self.vehicle_table.model().columnCount()):
-            index = self.vehicle_table.model().index(selected_row, column)
+            index = self.vehicle_table.model().index(selected_vehicle_row, column)
             selected_data.append(index.data())
-        year = int(selected_data[0])
+        year = int(selected_data[1])
         my_db = mysql.connector.connect(
 
             host="localhost",
@@ -85,10 +83,12 @@ class Ui_create_ro(object):
             database="CUSTOMERS"
         )
         conn = my_db.cursor()
-        find_vehicle = """SELECT * FROM vehicles WHERE year = %s and make = %s and model = %s"""
-        vh_data = [selected_data[0], selected_data[1], selected_data[2]]
+        find_vehicle = """SELECT * FROM vehicles WHERE vin = %s and year = %s and make = %s and model = %s"""
+        vh_data = (selected_data[0], selected_data[1], selected_data[2], selected_data[3])
         conn.execute(find_vehicle, vh_data)
         result = conn.fetchall()
+        with open('../database/vehicles/vid.json', 'w') as outfile:
+            json.dump(vh_data, outfile)
         for row in result:
             self.change_vehicle_ui.vin_line.setText(row[1])
             self.change_vehicle_ui.year_line.setText(row[2])
@@ -96,7 +96,12 @@ class Ui_create_ro(object):
             self.change_vehicle_ui.model_line.setText(row[4])
             self.change_vehicle_ui.engine_line.setText(row[5])
             self.change_vehicle_ui.trim_line.setText(row[6])
+
+
+
+        self.change_vehicle.show()
         my_db.close()
+
 
 
     def highlight_vehicle(self):
@@ -116,6 +121,16 @@ class Ui_create_ro(object):
         self.show_vehicle_add = QtWidgets.QWidget()
         self.show_vehicle_add_ui = vehicle_add.Ui_Form()
         self.show_vehicle_add_ui.setupUi(self.show_vehicle_add)
+        self.show_vehicle_add_ui.edit_button.hide()
+        selected_customer_row = self.customer_table.currentRow()
+        selected_customer_column = self.customer_table.currentColumn()
+        selected_data = []
+        selected_customer = self.customer_table.itemAt(selected_customer_row, selected_customer_column)
+        for column in range(self.customer_table.model().columnCount()):
+            index = self.customer_table.model().index(selected_customer_row, column)
+            selected_data.append(index.data())
+        with open('../database/customers/cid.json', 'w') as outfile:
+            json.dump(selected_data, outfile)
         self.show_vehicle_add.show()
 
 
@@ -189,7 +204,7 @@ class Ui_create_ro(object):
         )
         conn = my_db.cursor()
         tables_populate = """SELECT * FROM customers INNER JOIN vehicles ON
-                    customers.customer_id = vehicles.vehicle_id ORDER BY customers.name"""
+                    customers.customer_id = vehicles.customer_id ORDER BY customers.name"""
         conn.execute(tables_populate)
         table_row = 0
         result = conn.fetchall()
@@ -240,19 +255,20 @@ class Ui_create_ro(object):
         self.vehicle_table = QtWidgets.QTableWidget(parent=create_ro)
         self.vehicle_table.setMinimumSize(QtCore.QSize(500, 265))
         self.vehicle_table.setObjectName("vehicle_table")
-        self.vehicle_table.setColumnCount(3)
+        self.vehicle_table.setColumnCount(4)
         self.vehicle_table.setRowCount(row_count(self))
         self.vehicle_table.setEditTriggers(QtWidgets.QTableWidget.EditTrigger.NoEditTriggers)
         self.vehicle_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
         self.vehicle_table.cellDoubleClicked.connect(self.update_vehicle)
         self.vehicle_table.verticalScrollBar().valueChanged.connect(self.scroll_bars)
-        header_names = ("Year", "Make", "Model")
+        header_names = ("VIN", "Year", "Make", "Model")
         self.vehicle_table.setHorizontalHeaderLabels(header_names)
         vehicle_table_row = 0
         for row in result:
-            self.vehicle_table.setItem(vehicle_table_row, 0, QtWidgets.QTableWidgetItem(row[12]))
-            self.vehicle_table.setItem(vehicle_table_row, 1, QtWidgets.QTableWidgetItem(row[13]))
-            self.vehicle_table.setItem(vehicle_table_row, 2, QtWidgets.QTableWidgetItem(row[14]))
+            self.vehicle_table.setItem(vehicle_table_row, 0, QtWidgets.QTableWidgetItem(row[11]))
+            self.vehicle_table.setItem(vehicle_table_row, 1, QtWidgets.QTableWidgetItem(row[12]))
+            self.vehicle_table.setItem(vehicle_table_row, 2, QtWidgets.QTableWidgetItem(row[13]))
+            self.vehicle_table.setItem(vehicle_table_row, 3, QtWidgets.QTableWidgetItem(row[14]))
             vehicle_table_row += 1
         self.verticalLayout_2.addWidget(self.vehicle_table)
         self.vehicle_table.cellClicked.connect(self.highlight_vehicle)
@@ -297,7 +313,6 @@ class Ui_create_ro(object):
         self.winter_auto_logo.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.winter_auto_logo.setObjectName("winter_auto_logo")
         self.gridLayout.addWidget(self.winter_auto_logo, 0, 2, 1, 1)
-
         self.retranslateUi(create_ro)
         QtCore.QMetaObject.connectSlotsByName(create_ro)
 

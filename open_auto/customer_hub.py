@@ -61,8 +61,12 @@ class Ui_MainWindow(object):
             index = self.customer_table.model().index(selected_row, column)
             selected_data.append(index.data())
         conn = my_db.cursor()
-        delete_customer_row = "DELETE FROM customers WHERE name = %s AND address = %s"
-        conn.execute(delete_customer_row, (selected_data[0], selected_data[1]))
+        cid_find = (selected_data[0], selected_data[5])
+        find_id = """SELECT customer_id from customers where name = %s and phone = %s"""
+        conn.execute(find_id, cid_find)
+        result = conn.fetchone()
+        delete_customer_row = "DELETE FROM customers WHERE customer_id = %s"
+        conn.execute(delete_customer_row, result)
         my_db.commit()
         my_db.close()
         self.customer_table.removeRow(selected_row)
@@ -112,7 +116,6 @@ class Ui_MainWindow(object):
         conn.execute(query, name_phone)
         result = conn.fetchall()
 
-        print(selected_data)
         for row in result:
             self.show_edit_customer_page_ui.name_line.setText(row[0])
             self.show_edit_customer_page_ui.address_line.setText(row[1])
@@ -123,7 +126,6 @@ class Ui_MainWindow(object):
             self.show_edit_customer_page_ui.alt_name.setItemText(0, row[7])
             self.show_edit_customer_page_ui.alt_line.setText(row[6])
             self.show_edit_customer_page_ui.email_line.setText(row[8])
-            print(self.show_edit_customer_page_ui.alt_name.currentText())
         my_db.close()
 
 # Find row id to be able to edit or delete data from database
@@ -135,12 +137,39 @@ class Ui_MainWindow(object):
         for column in range(self.customer_table.model().columnCount()):
             index = self.customer_table.model().index(selected_row, column)
             selected_data.append(index.data())
-        print(selected_data)
 
 # Refresh Window To Update Table Data
     def restart_app(self):
-        QtCore.QCoreApplication.quit()
-        status = QtCore.QProcess.startDetached(sys.executable, sys.argv)
+        self.customer_table.clear()
+        header_names = ("Name", "Address", "City", "State", "Zip", "Phone", "Alt Phone", "Email")
+        self.customer_table.setHorizontalHeaderLabels(header_names)
+        self.customer_table.setRowCount(customers_db.row_count(self))
+
+
+        my_db = mysql.connector.connect(
+
+            host="localhost",
+            user="root",
+            passwd="OpenAuto1",
+            database="CUSTOMERS"
+        )
+        conn = my_db.cursor()
+        conn.execute("SELECT * FROM customers ORDER BY name")
+        table_row = 0
+        result = conn.fetchall()
+
+        for row in result:
+            self.customer_table.setItem(table_row, 0, QtWidgets.QTableWidgetItem(row[0]))
+            self.customer_table.setItem(table_row, 1, QtWidgets.QTableWidgetItem(row[1]))
+            self.customer_table.setItem(table_row, 2, QtWidgets.QTableWidgetItem(row[2]))
+            self.customer_table.setItem(table_row, 3, QtWidgets.QTableWidgetItem(row[3]))
+            self.customer_table.setItem(table_row, 4, QtWidgets.QTableWidgetItem(row[4]))
+            self.customer_table.setItem(table_row, 5, QtWidgets.QTableWidgetItem(row[5]))
+            self.customer_table.setItem(table_row, 6, QtWidgets.QTableWidgetItem(row[6]))
+            self.customer_table.setItem(table_row, 7, QtWidgets.QTableWidgetItem(row[8]))
+            table_row += 1
+        my_db.close()
+        self.customer_table.repaint()
 # Highlights entire row instead of single cell
     def highlight_row(self):
         self.customer_table.selectRow(self.customer_table.currentRow())
@@ -189,7 +218,7 @@ class Ui_MainWindow(object):
             self.customer_table.setItem(table_row, 4, QtWidgets.QTableWidgetItem(row[4]))
             self.customer_table.setItem(table_row, 5, QtWidgets.QTableWidgetItem(row[5]))
             self.customer_table.setItem(table_row, 6, QtWidgets.QTableWidgetItem(row[6]))
-            self.customer_table.setItem(table_row, 7, QtWidgets.QTableWidgetItem(row[7]))
+            self.customer_table.setItem(table_row, 7, QtWidgets.QTableWidgetItem(row[8]))
             table_row += 1
         my_db.close()
         self.gridLayout.addWidget(self.customer_table, 0, 1, 2, 1)
