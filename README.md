@@ -24,12 +24,19 @@ Service data, labor times and plate to vin decoding will not be implemented. I a
 researched these API's.
 3. Probably a lot more that you would be used to if you use software such as Tekmetric, Mitchell1, ShopWare etc.
 
-![Screenshot from 2023-12-26 11-48-05.png](..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-26%2011-48-05.png)
-![Screenshot from 2023-12-26 11-48-19.png](..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-26%2011-48-19.png)
-![Screenshot from 2023-12-26 11-50-55.png](..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-26%2011-50-55.png)
-![Screenshot from 2023-12-26 11-51-02.png](..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-26%2011-51-02.png)
-![Screenshot from 2023-12-26 11-51-14.png](..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-26%2011-51-14.png)
-![Screenshot from 2023-12-26 11-51-25.png](..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-26%2011-51-25.png)
-![Screenshot from 2023-12-26 11-52-05.png](..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-26%2011-52-05.png)
-![Screenshot from 2023-12-26 11-52-11.png](..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-26%2011-52-11.png)
-![Screenshot from 2023-12-26 11-52-15.png](..%2F..%2FPictures%2FScreenshots%2FScreenshot%20from%202023-12-26%2011-52-15.png)
+![Screenshot from 2023-12-26 11-48-05](https://github.com/winterautollc/OpenAutoLite/assets/152924067/baea7997-5d43-47ae-b3be-a50297eedfd2)
+![Screenshot from 2023-12-26 11-48-19](https://github.com/winterautollc/OpenAutoLite/assets/152924067/3ba000a7-3d58-4d0f-9c82-0fb627a248e6)
+
+![Screenshot from 2023-12-26 11-50-55](https://github.com/winterautollc/OpenAutoLite/assets/152924067/a4755c6d-38b2-4193-bd50-6bdccda0b036)
+
+![Screenshot from 2023-12-26 11-51-02](https://github.com/winterautollc/OpenAutoLite/assets/152924067/fc7194f4-5fda-4f7a-9251-4732303d7410)
+
+![Screenshot from 2023-12-26 11-51-14](https://github.com/winterautollc/OpenAutoLite/assets/152924067/fddd50cd-1ec9-4466-80e6-5b8640ab6653)
+![Screenshot from 2023-12-26 11-51-25](https://github.com/winterautollc/OpenAutoLite/assets/152924067/493f2bbd-258d-47b5-8190-b99299234f64)
+![Screenshot from 2023-12-26 11-52-05](https://github.com/winterautollc/OpenAutoLite/assets/152924067/b9cd8a7a-6cb7-43d4-9458-1618a9862472)
+![Screenshot from 2023-12-26 11-52-11](https://github.com/winterautollc/OpenAutoLite/assets/152924067/09af80a3-94fc-4990-96a0-186581766f39)
+![Screenshot from 2023-12-26 11-52-15](https://github.com/winterautollc/OpenAutoLite/assets/152924067/8fee5d00-f838-46a7-8cb8-2243df4759b2)
+
+
+![Screenshot from 2024-02-22 11-07-53](https://github.com/winterautollc/OpenAutoLite/assets/152924067/0e063754-6611-40b8-be07-f5b1d6337059)
+
