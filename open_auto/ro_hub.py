@@ -121,7 +121,7 @@ class Ui_ROs(object):
         self.checckout_button.setIcon(icon5)
         self.checckout_button.setIconSize(QtCore.QSize(30, 30))
         self.checckout_button.setFlat(True)
-        self.checckout_button.setObjectName("checckout_button")
+        self.checckout_button.setObjectName("checkout_button")
         self.verticalLayout.addWidget(self.checckout_button)
         self.settings_button = QtWidgets.QPushButton(parent=self.layoutWidget)
         self.settings_button.setStyleSheet("text-align: left;")

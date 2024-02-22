@@ -1,9 +1,8 @@
-import io
 import json
 from PyQt6 import QtCore, QtGui, QtWidgets
 import mysql.connector
-from database.customers.customers_db import row_count
-
+from database.vehicles.vehicle_db import row_count
+import ro
 import vehicle_add
 import edit_customer
 
@@ -133,7 +132,51 @@ class Ui_create_ro(object):
             json.dump(selected_data, outfile)
         self.show_vehicle_add.show()
 
-
+    def open_ro(self):
+        self.repair_order = QtWidgets.QMainWindow()
+        self.repair_order_ui = ro.Ui_MainWindow()
+        self.repair_order_ui.setupUi(self.repair_order)
+        self.repair_order.show()
+        my_db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="OpenAuto1",
+            database="CUSTOMERS"
+        )
+        conn = my_db.cursor()
+        selected_vehicle_row = self.vehicle_table.currentRow()
+        selected_vehicle_column = self.vehicle_table.currentColumn()
+        vehicle_data = []
+        selected_vehicle = self.vehicle_table.itemAt(selected_vehicle_row, selected_vehicle_column)
+        for column in range(self.vehicle_table.model().columnCount()):
+            index = self.vehicle_table.model().index(selected_vehicle_row, column)
+            vehicle_data.append(index.data())
+        customer_query = """SELECT * FROM customers where name = %s and phone = %s"""
+        vehicle_query = """SELECT * FROM vehicles where vin = %s and year = %s and make = %s and model = %s"""
+        selected_customer_row = self.customer_table.currentRow()
+        selected_customer_column = self.customer_table.currentColumn()
+        customer_data = []
+        selected_customer = self.customer_table.itemAt(selected_customer_row, selected_customer_column)
+        for column in range(self.customer_table.model().columnCount()):
+            index = self.customer_table.model().index(selected_customer_row, column)
+            customer_data.append(index.data())
+        conn.execute(customer_query, customer_data)
+        c_result = conn.fetchall()
+        c_data = c_result[0]
+        conn.execute(vehicle_query, vehicle_data)
+        v_result = conn.fetchall()
+        v_data = v_result[0]
+        self.repair_order_ui.name_line.setText(c_data[0])
+        self.repair_order_ui.phone_line.setText(c_data[5])
+        self.repair_order_ui.alt_phone_line.setText(c_data[6])
+        self.repair_order_ui.email_line.setText(c_data[8])
+        self.repair_order_ui.vin_line.setText(v_data[1])
+        self.repair_order_ui.year_line.setText(v_data[2])
+        self.repair_order_ui.make_line.setText(v_data[3])
+        self.repair_order_ui.model_line.setText(v_data[4])
+        self.repair_order_ui.engine_line.setText(v_data[6])
+        self.repair_order_ui.created_edit.setDate(QtCore.QDate.currentDate())
+        self.repair_order_ui.created_edit.setTime(QtCore.QTime.currentTime())
 
 
     def setupUi(self, create_ro):
@@ -203,16 +246,17 @@ class Ui_create_ro(object):
             database="CUSTOMERS"
         )
         conn = my_db.cursor()
-        tables_populate = """SELECT * FROM customers INNER JOIN vehicles ON
-                    customers.customer_id = vehicles.customer_id ORDER BY customers.name"""
+        tables_populate = """SELECT * FROM customers inner JOIN vehicles ON
+                    customers.customer_id = vehicles.customer_id order by customers.name"""
         conn.execute(tables_populate)
         table_row = 0
-        result = conn.fetchall()
+        table_result = conn.fetchall()
 
-        for row in result:
+        for row in table_result:
             self.customer_table.setItem(table_row, 0, QtWidgets.QTableWidgetItem(row[0]))
             self.customer_table.setItem(table_row, 1, QtWidgets.QTableWidgetItem(row[5]))
             table_row += 1
+        self.customer_table.setRowCount(2)
         self.customer_table.cellClicked.connect(self.highlight_customer)
         self.customer_table.cellDoubleClicked.connect(self.update_customer_credentials)
         self.customer_table.verticalScrollBar().valueChanged.connect(self.scroll_bars)
@@ -264,7 +308,7 @@ class Ui_create_ro(object):
         header_names = ("VIN", "Year", "Make", "Model")
         self.vehicle_table.setHorizontalHeaderLabels(header_names)
         vehicle_table_row = 0
-        for row in result:
+        for row in table_result:
             self.vehicle_table.setItem(vehicle_table_row, 0, QtWidgets.QTableWidgetItem(row[11]))
             self.vehicle_table.setItem(vehicle_table_row, 1, QtWidgets.QTableWidgetItem(row[12]))
             self.vehicle_table.setItem(vehicle_table_row, 2, QtWidgets.QTableWidgetItem(row[13]))
@@ -304,6 +348,8 @@ class Ui_create_ro(object):
         self.save_button.setIconSize(QtCore.QSize(30, 30))
         self.save_button.setFlat(True)
         self.save_button.setObjectName("save_button")
+        self.save_button.clicked.connect(self.open_ro)
+        self.save_button.clicked.connect(create_ro.close)
         self.horizontalLayout.addWidget(self.save_button)
         self.gridLayout.addLayout(self.horizontalLayout, 3, 2, 1, 1)
         self.winter_auto_logo = QtWidgets.QLabel(parent=create_ro)
@@ -315,6 +361,7 @@ class Ui_create_ro(object):
         self.gridLayout.addWidget(self.winter_auto_logo, 0, 2, 1, 1)
         self.retranslateUi(create_ro)
         QtCore.QMetaObject.connectSlotsByName(create_ro)
+
 
     def retranslateUi(self, create_ro):
         _translate = QtCore.QCoreApplication.translate

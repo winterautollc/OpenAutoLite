@@ -1,19 +1,19 @@
 import mysql.connector
-import json
-
-my_db = mysql.connector.connect(
-
-    host="localhost",
-    user="root",
-    passwd="OpenAuto1",
-    database="CUSTOMERS"
-)
 
 
-def find_last_entry_id(self):
+def row_count(self):
+    my_db = mysql.connector.connect(
+
+        host="localhost",
+        user="root",
+        passwd="OpenAuto1",
+        database="CUSTOMERS"
+    )
     conn = my_db.cursor()
-    with open('../customers/cid.json', 'r') as outfile:
-        customer_id = json.load(outfile)
-    return customer_id
-
+    query = "SELECT COUNT(*) FROM vehicles"
+    conn.execute(query)
+    result = conn.fetchone()
+    vehicle_row_count = result[0]
+    my_db.close()
+    return vehicle_row_count
 

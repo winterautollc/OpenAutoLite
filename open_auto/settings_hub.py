@@ -1,6 +1,6 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtWidgets import QFileDialog
-
+import mysql.connector
 
 class Ui_Form(object):
 
@@ -11,12 +11,49 @@ class Ui_Form(object):
             filter=file_filter,
             initialFilter="Image Files(*.jpg *.png *.svg)"
         )
+
         shop_logo_image = QtGui.QPixmap(logo_select[0])
         if logo_select:
             self.label.setPixmap(shop_logo_image)
             self.label.move(1, 42)
             self.label.setScaledContents(True)
+            
+    def show_estimate_terms(self):
+        self.estimate_terms_edit.show()
+        self.invoice_terms_edit.hide()
+        self.warranty_terms_edit.hide()
 
+    def show_invoice_terms(self):
+        self.invoice_terms_edit.show()
+        self.estimate_terms_edit.hide()
+        self.warranty_terms_edit.hide()
+
+    def show_warranty_terms(self):
+        self.warranty_terms_edit.show()
+        self.estimate_terms_edit.hide()
+        self.invoice_terms_edit.hide()
+        self.warranty_checkbox.show()
+
+    def save_settings(self):
+        settings = (self.shop_name_edit.text(), self.facility_number_edit.text(), self.address_edit.text(),
+                    self.city_edit.text(), self.state_edit.text(), self.zip_edit.text(),
+                    self.estimate_terms_edit.toPlainText(), self.invoice_terms_edit.toPlainText(),
+                    self.warranty_terms_edit.toPlainText(), self.labor_rate_edit.text(), self.parts_markup_edit.text(),
+                    self.oem_markup_edit.text(), self.tire_markup_edit.text())
+        my_db = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="OpenAuto1",
+            database="CUSTOMERS"
+        )
+        conn = my_db.cursor()
+        save_to_db = """INSERT OR REPLACE INTO settings (shop_name, facility_number, address, city, state, zip,
+                        estimate_terms, invoice_terms, warranty_terms, labor_rate, parts_markup, oem_markup, 
+                        tire_markup) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+       # conn.execute(save_to_db, settings)
+      #  my_db.commit()
+       # my_db.close()
+        print(self.estimate_terms_edit.toPlainText())
 
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -218,6 +255,8 @@ class Ui_Form(object):
         self.estimate_term_button = QtWidgets.QRadioButton(parent=self.layoutWidget)
         self.estimate_term_button.setMinimumSize(QtCore.QSize(0, 50))
         self.estimate_term_button.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
+        self.estimate_term_button.setChecked(True)
+        self.estimate_term_button.clicked.connect(self.show_estimate_terms)
         icon3 = QtGui.QIcon()
         icon3.addPixmap(QtGui.QPixmap("../ui_files/Images/Icons/add-document.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.estimate_term_button.setIcon(icon3)
@@ -231,6 +270,7 @@ class Ui_Form(object):
         self.invoice_term_button.setIcon(icon4)
         self.invoice_term_button.setIconSize(QtCore.QSize(30, 30))
         self.invoice_term_button.setObjectName("invoice_term_button")
+        self.invoice_term_button.clicked.connect(self.show_invoice_terms)
         self.verticalLayout_3.addWidget(self.invoice_term_button)
         self.warranty_term_button = QtWidgets.QRadioButton(parent=self.layoutWidget)
         self.warranty_term_button.setMinimumSize(QtCore.QSize(0, 50))
@@ -241,6 +281,7 @@ class Ui_Form(object):
         self.warranty_term_button.setObjectName("warranty_term_button")
         self.verticalLayout_3.addWidget(self.warranty_term_button)
         self.terms_buttons_tab.addTab(self.tab, "")
+        self.warranty_term_button.clicked.connect(self.show_warranty_terms)
         self.gridLayout_3.addWidget(self.terms_buttons_tab, 0, 0, 1, 1)
         self.invoice_terms_edit = QtWidgets.QTextEdit(parent=self.terms_tab)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
@@ -488,6 +529,9 @@ class Ui_Form(object):
         self.gridLayout_4.addLayout(self.horizontalLayout_6, 2, 3, 1, 1)
         self.tabWidget.addTab(self.taxes_tab, "")
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
+        self.save_button.clicked.connect(self.save_settings)
+        self.save_button_2.clicked.connect(self.save_settings)
+        self.save_button_3.clicked.connect(self.save_settings)
 
         self.retranslateUi(Form)
         self.tabWidget.setCurrentIndex(0)
